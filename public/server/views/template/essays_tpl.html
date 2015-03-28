@@ -1,0 +1,72 @@
+<div ng-controller="essayCtrl">
+    <cont-tabs tabs-list="tabsList" tab-index="tab_index"></cont-tabs>
+    <br/>
+    <div class="tab-content">
+        <div ng-class="{active:tab_index==0}" class="tab-pane" id="essayList">
+            <div class="row">
+                <div class="col-lg-4"><input type="text" ng-model-options="{updateOn:'default',debounce:{'default':200}}" placeholder="搜索关键词..." ng-model="essaySearch" class="form-control"/></div>
+            </div>
+            <ul class="list-unstyled essays-wrap">
+                <li ng-repeat="item in essays | filter:essaySearch">
+                    <h5><a href="" ng-click="detailEssay(item)">{{item.title}}</a></h5>
+                    <!--<div ng-bind-html="item.content | HtmlFilter"></div>-->
+                    <small class="lightgray">分类：{{item.category}} | 作者：{{item.author}} | 发表时间：{{item.time.day}}</small>
+                </li>
+            </ul>
+        </div>
+        <div ng-class="{active:tab_index==1}" class="tab-pane" id="essayAdd">
+            <form novalidate name="appEssay" class="col-lg-6">
+                <div class="form-group" ng-class="{'has-error':submitErr.titleErr}">
+                    <label class="control-label">标题：</label>
+                    <input ng-focus="clearErr()" class="form-control" type="text" name="title" ng-model="essay.title" required />
+                    <div class="help-block">{{submitErr.titleErr}}</div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">分类：</label>
+                    <select class="form-control" ng-model="essay.category" ng-options="category for category in categorys"></select>
+                </div>
+                <div class="form-group" ng-class="{'has-error':submitErr.contErr}">
+                    <label class="control-label">内容：</label>
+                    <textarea ng-focus="clearErr()" class="form-control" rows="16" ng-model="essay.content"></textarea>
+                    <div class="help-block">{{submitErr.contErr}}</div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-warning" ng-click="subEssay()">发 表</button>
+                </div>
+            </form>
+        </div>
+        <div ng-class="{active:tab_index==2}" class="tab-pane" id="essayEdit">
+            <form novalidate name="appEssay" class="col-lg-6">
+                <div class="form-group" ng-class="{'has-error':submitErr.titleErr}">
+                    <label class="control-label">标题：</label>
+                    <input ng-focus="clearErr()" class="form-control" type="text" name="title" ng-model="essay.title" required />
+                    <div class="help-block">{{submitErr.titleErr}}</div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">分类：</label>
+                    <select class="form-control" ng-model="essay.category" ng-options="category for category in categorys"></select>
+                </div>
+                <div class="form-group" ng-class="{'has-error':submitErr.contErr}">
+                    <label class="control-label">内容：</label>
+                    <textarea ng-focus="clearErr()" class="form-control" rows="16" ng-model="essay.content"></textarea>
+                    <div class="help-block">{{submitErr.contErr}}</div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-success" ng-click="updateEssay()">保 存</button>
+                </div>
+            </form>
+        </div>
+        <div ng-class="{active:tab_index==3}" class="tab-pane" id="essayView">
+            <div class="col-lg-6">
+                <h2>{{essay.title}}</h2>
+                <p class="lightgray">分类：{{essay.category}} | 作者：{{essay.author}} | 发表时间：{{essay.time.day}}</p>
+                <br/>
+                <div ng-bind-html="essay.content | HtmlFilter"></div>
+                <br/>
+                <div>
+                    <button type="button" class="btn btn-success" ng-click="editEssay(essay._id)">修 改</button>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-danger" ng-click="delEssay(essay._id)">删 除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,391 @@
+<div ng-controller="goodCtrl">
+    <cont-tabs tabs-list="tabsList" tab-index="tab_index"></cont-tabs>
+    <br/>
+    <div class="tab-content">
+        <div class="tab-pane" ng-class="{active:tab_index==0}">
+            <div class="filterWrap">
+                <form class="form-horizontal" name="filterForm" novalidate>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">关键词：</label>
+                        <div class="col-md-6">
+                            <input ng-model="filter.exp" type="text" class="form-control" name="exp" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">类别：</label>
+                        <div class="col-md-6">
+                            <select ng-model="filter.category" class="form-control" name="category"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">价格：</label>
+                        <div class="col-md-4">
+                            <input ng-model="filter.ltPrice" type="text" class="form-control short-control" name="ltPrice"/> - <input ng-model="filter.gtPrice" type="text" class="form-control short-control" name="gtPrice"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">数量：</label>
+                        <div class="col-md-4">
+                            <input ng-model="filter.ltCount" type="text" class="form-control short-control" name="ltCount"/> - <input ng-model="filter.gtCount" type="text" class="form-control short-control" name="gtCount"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">活动：</label>
+                        <div class="col-md-6">
+                            <select ng-model="filter.event" class="form-control" name="event"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-1">
+                            <button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-search"></span> 查 询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr/>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>商品分类</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="g in goods">
+                        <td>{{g.name}}</td>
+                        <td>{{g.category.toString()}}</td>
+                        <td><a href="" ng-click="updateGood(g._id)">修改</a> | <a href="" ng-click="removeGood(g._id)">删除</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==1}">
+            <div class="col-md-6">
+                <form name="goodModel" novalidate>
+                    <div class="form-group" ng-class="{'has-error':validError.name}">
+                        <label class="control-label"><em class="red">*</em> 模板名称：</label>
+                        <input ng-focus="clearErr()" type="text" class="form-control" name="gmName" ng-model="gModel.name"/>
+                        <div class="help-block" ng-show="validError.name">{{validError.name}}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">商品模板属性：</label>
+                        <div class="input-group">
+                            <input ng-model="spec_item" type="text" ng-focus="clearErr()" class="form-control" name="gmSpec"/>
+                        <span class="input-group-btn">
+                            <button type="button" ng-click="addSpec(spec_item)" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> 添加属性</button>
+                        </span>
+                        </div>
+                        <ul ng-show="hasSpec" class="list-unstyled gmodel-spec-list">
+                            <li ng-repeat="sp in cacheSpec"><a href class="pull-right" ng-click="removeSpec($index)"><span class="glyphicon glyphicon-remove"></span></a>{{sp}}</li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">模板描述：</label>
+                        <textarea ng-model="gModel.description" class="form-control" rows="5"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" ng-click="saveGModel()" class="btn btn-danger">保存模板</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==2}">
+            <div class="col-md-6">
+                <form name="categoryForm" novalidate>
+                    <div class="form-group" ng-class="{'has-error':validError.name}">
+                        <label class="control-label"><em class="red">*</em> 分类名称：</label>
+                        <input type="text" ng-focus="clearErr()" class="form-control" ng-model="gCate.name"/>
+                        <div class="help-block" ng-show="validError.name">{{validError.name}}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">分类等级：</label>
+                        <select ng-change="getSubCate()" ng-model="gCate.level" class="form-control">
+                            <option value="0">一级分类</option>
+                            <option value="1">二级分类</option>
+                            <option value="2">三级分类</option>
+                        </select>
+                    </div>
+                    <div class="form-group" ng-show="gCate.level!=0" ng-class="{'has-error':validError.cParent}">
+                        <label class="control-label"><em class="red">*</em> 父级分类：</label>
+                        <select ng-change="getParent()" ng-focus="clearErr()" class="form-control" ng-model="cParent" ng-options="t.name for t in cateTemplate"></select>
+                        <div class="help-block" ng-show="validError.cParent">{{validError.cParent}}</div>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <button type="button" ng-click="saveGCate()" class="btn btn-default">保 存</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12">
+                <br/>
+                <h3>分类列表</h3>
+                <div class="row">
+                    <div class="col-md-2">
+                        <select ng-model="search.level" class="form-control">
+                            <option value="">按等级筛选</option>
+                            <option value="0">一级分类</option>
+                            <option value="1">二级分类</option>
+                            <option value="2">三级分类</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"><input type="text" class="form-control" ng-model="search.parent" placeholder="按父类筛选"/></div>
+                    <div class="col-md-3"><input type="text" class="form-control" ng-model="search.name" placeholder="按名称筛选"/></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-danger" ng-click="delCate()">删除选中</button> </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th width="20px"><input ng-model="selectAll" type="checkbox" ng-click="selectedAll()"/></th>
+                            <th><a href="" ng-click="orderStr='name';orderRev=!orderRev">类别名称</a></th>
+                            <th><a href="" ng-click="orderStr='level';orderRev=!orderRev">类别等级</a></th>
+                            <th><a href="" ng-click="orderStr='parent';orderRev=!orderRev">关联父类</a></th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="t in allCates | filter:search | orderBy:orderStr:orderRev">
+                            <td><input type="checkbox" ng-model="t.checked" ng-click="checkSelected(t)"/></td>
+                            <td>{{t.name}}</td>
+                            <td>{{t.level}}</td>
+                            <td>{{t.parent || '无'}}</td>
+                            <td><a href="" ng-click="delCate(t._id)">删除</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==3}">
+            <div class="create-tab" ng-class="{active:createTemp==0}">
+                <h4>选择商品模板：</h4>
+                <hr/>
+                <ul class="list-unstyled gmodel-list clearfix">
+                    <li ng-repeat="m in allModels"><a href="" ng-click="useModel(m.spec)" class="pull-left">{{m.name}}</a><a href="" ng-click="removeModel(m._id)" class="pull-right">&times;</a></li>
+                </ul>
+            </div>
+            <div class="create-tab create-widget" ng-class="{active:createTemp==1}">
+                <button type="button" class="btn btn-warning" ng-click="selectModel()">重新选择模型</button>
+                <ul class="nav-tabs nav clearfix">
+                    <li ng-repeat="t in createTabs" ng-class="{active:createStep==$index}"><a href="" ng-click="turnto($index)">{{t}}</a></li>
+                </ul>
+                <br/>
+                <div class="tab-content">
+                    <div ng-class="{active:createStep==0}" id="goodBase" class="tab-pane">
+                        <form name="baseForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.goodName}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品名称：</label>
+                                <div class="col-md-5">
+                                    <input ng-focus="clearErr()" type="text" class="form-control" ng-model="good.name" required/>
+                                    <div class="help-block" ng-show="validError.goodName">{{validError.goodName}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-1 control-label">商品副标题：</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" ng-model="good.ad"/>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error':validError.goodCate}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品分类：</label>
+                                <div class="col-md-5 category-group">
+                                    <select ng-model="gcate0" class="form-control">
+                                        <option ng-repeat="c in allCates | cateFilter:0">{{c.name}}</option>
+                                    </select>
+                                    <select ng-model="gcate1" class="form-control" ng-show="gcate0">
+                                        <option ng-repeat="c in allCates | cateFilter:1:gcate0">{{c.name}}</option>
+                                    </select>
+                                    <select ng-model="gcate2" class="form-control" ng-show="gcate1">
+                                        <option ng-repeat="c in allCates | cateFilter:2:gcate1">{{c.name}}</option>
+                                    </select>
+                                    <div class="help-block" ng-show="validError.goodCate">{{validError.goodCate}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error':validError.goodPrice}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品价格：</label>
+                                <div class="col-md-2">
+                                    <input ng-focus="clearErr()" type="text" class="form-control" ng-model="good.price"/>
+                                </div>
+                                <div class="help-block" ng-show="validError.goodPrice">{{validError.goodPrice}}</div>
+                            </div>
+                            <spec-group index="$index" spec="s" ng-repeat="s in good.spec"></spec-group>
+                            <div class="form-group">
+                                <label class="col-md-1 control-label">商品描述：</label>
+                                <div class="col-md-5">
+                                    <textarea type="text" class="form-control" ng-model="good.description" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" ng-click="saveBase()" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div ng-class="{active:createStep==1}" id="goodImage" class="tab-pane">
+                        <form enctype="multipart/form-data" name="imageForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.ImgErr}">
+                                <label class="col-md-1 control-label">商品图片：</label>
+                                <div class="col-md-11">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <input data-target="#goodPreview" ng-click="clearErr()" type="file" multiple onchange="imgUpload.getFile(this)" class="form-control"/>
+                                            <div class="help-block" ng-show="validError.ImgErr">{{validError.ImgErr}}</div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div id="goodPreview" class="local-preview">
+                                        <ul class="list-unstyled list-inline images-list">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" class="btn btn-success" ng-click="saveImage()"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>&nbsp;&nbsp;&nbsp;&nbsp;<a href="" ng-click="passImages()">跳过</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div ng-class="{active:createStep==2}" id="goodCount" class="tab-pane">
+                        <spec-couples cp-list="specCouple" target-id="good._id"></spec-couples>
+                    </div>
+                    <div ng-class="{active:createStep==3}" id="goodDetail" class="tab-pane">
+                        <form name="detailForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.detailErr}">
+                                <label class="col-md-1 control-label">商品详情：</label>
+                                <div class="col-md-5">
+                                    <textarea type="text" class="form-control" ng-model="good.detail" rows="15" ng-focus="clearErr()"></textarea>
+                                    <div class="help-block" ng-show="validError.detailErr">{{validError.detailErr}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" ng-click="saveDetail()" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>&nbsp;&nbsp;&nbsp;&nbsp;<a href="" ng-click="finishGood()">跳过并完成创建</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==4}">
+            <div class="update-widget">
+                <ul class="nav-tabs nav clearfix">
+                    <li ng-repeat="t in createTabs" ng-class="{active:createStep==$index}"><a href="" ng-click="turnto($index)">{{t}}</a></li>
+                </ul>
+                <br/>
+                <div class="tab-content">
+                    <div ng-class="{active:createStep==0}" id="updateBase" class="tab-pane">
+                        <form name="baseForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.goodName}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品名称：</label>
+                                <div class="col-md-5">
+                                    <input ng-focus="clearErr()" type="text" class="form-control" ng-model="good.name" required/>
+                                    <div class="help-block" ng-show="validError.goodName">{{validError.goodName}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-1 control-label">商品副标题：</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" ng-model="good.ad"/>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error':validError.goodCate}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品分类：</label>
+                                <div class="col-md-5 category-group">
+                                    <select ng-model="gcate0" class="form-control">
+                                        <option ng-repeat="c in allCates | cateFilter:0">{{c.name}}</option>
+                                    </select>
+                                    <select ng-model="gcate1" class="form-control" ng-show="gcate0">
+                                        <option ng-repeat="c in allCates | cateFilter:1:gcate0">{{c.name}}</option>
+                                    </select>
+                                    <select ng-model="gcate2" class="form-control" ng-show="gcate1">
+                                        <option ng-repeat="c in allCates | cateFilter:2:gcate1">{{c.name}}</option>
+                                    </select>
+                                    <div class="help-block" ng-show="validError.goodCate">{{validError.goodCate}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error':validError.goodPrice}">
+                                <label class="col-md-1 control-label"><em class="red">*</em> 商品价格：</label>
+                                <div class="col-md-2">
+                                    <input ng-focus="clearErr()" type="text" class="form-control" ng-model="good.price"/>
+                                </div>
+                                <div class="help-block" ng-show="validError.goodPrice">{{validError.goodPrice}}</div>
+                            </div>
+                            <spec-group index="$index" spec="s" ng-repeat="s in good.spec"></spec-group>
+                            <div class="form-group">
+                                <label class="col-md-1 control-label">商品描述：</label>
+                                <div class="col-md-5">
+                                    <textarea class="form-control" ng-model="good.description" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" ng-click="updateBase()" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div ng-class="{active:createStep==1}" id="updateImage" class="tab-pane">
+                        <form enctype="multipart/form-data" name="imageForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.ImgErr}">
+                                <label class="col-md-1 control-label">商品图片：</label>
+                                <div class="col-md-11">
+                                    <div id="goodImages" ng-show="good.images.length>0">
+                                        <ul class="list-unstyled images-list list-inline">
+                                            <li ng-repeat="img in good.images"><a href="javascript:;" class="remove" ng-click="removeServerImg($index,img)"><span class="glyphicon glyphicon-trash"></span></a><img ng-src="{{img}}"/></li>
+                                        </ul>
+                                        <hr/>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <input data-target="#updatePreview" ng-click="clearErr()" type="file" multiple onchange="imgUpload.getFile(this)" class="form-control"/>
+                                            <div class="help-block" ng-show="validError.ImgErr">{{validError.ImgErr}}</div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div id="updatePreview" class="local-preview">
+                                        <ul class="list-unstyled list-inline images-list">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" class="btn btn-success" ng-click="updateImage()"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div ng-class="{active:createStep==2}" id="updateCount" class="tab-pane">
+                        <div class="alert alert-warning alert-dismissable" ng-show="isChange">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            商品属性发生变更，请更新库存。
+                        </div>
+                        <spec-couples cp-list="specCouple" target-id="good._id"></spec-couples>
+                    </div>
+                    <div ng-class="{active:createStep==3}" id="updateDetail" class="tab-pane">
+                        <form name="detailForm" novalidate class="form-horizontal">
+                            <div class="form-group" ng-class="{'has-error':validError.detailErr}">
+                                <label class="col-md-1 control-label">商品详情：</label>
+                                <div class="col-md-5">
+                                    <textarea class="form-control" ng-model="good.detail" rows="15" ng-focus="clearErr()"></textarea>
+                                    <div class="help-block" ng-show="validError.detailErr">{{validError.detailErr}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <button type="button" ng-click="saveDetail()" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> 保 存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

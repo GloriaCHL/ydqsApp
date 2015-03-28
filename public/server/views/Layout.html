@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ydqsApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--<link rel="icon" href="">-->
+    <base href="/">
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="server/styles/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
+    <script src="bower_components/respond/dest/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-controller="mainCtrl">
+
+<div ng-view></div>
+
+<script data-main="server/scripts/requireMap" src="bower_components/requirejs/require.js"></script>
+<script type='text/javascript' src="server/scripts/_view.js"></script>
+</body>
+</html>

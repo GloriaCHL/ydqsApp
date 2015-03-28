@@ -1,0 +1,79 @@
+<div ng-controller="adminCtrl">
+    <cont-tabs tabs-list="tabsList" tab-index="tab_index"></cont-tabs>
+    <br/>
+    <div class="tab-content">
+        <div class="tab-pane" ng-class="{active:tab_index==0}">
+            <table class="table table-striped table-hover" ng-init="flter='name';reverse=false">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" ng-model="selectAll" ng-click="selectedAll()"/></th>
+                    <th width="80%" ng-click="flter='name';reverse=!reverse">管理员</th>
+                    <th ng-click="flter='permission';reverse=!reverse">权限</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="admin in admins | orderBy:flter:reverse"><td><input ng-click="checkSelected(admin)" ng-model="admin.checked" type="checkbox"/></td><td>{{admin.name}}</td><td>{{admin.permission}}</td><td><a href="javascript:;" ng-click="ediAdmin(admin)">修改</a> | <a href="javascript:;" ng-click="delAdmin(admin)">删除</a></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==1}">
+            <form name="newAdmin" class="col-lg-6" novalidate>
+                <div class="form-group" ng-class="{'has-error':validError.nameErr}">
+                    <label class="control-label"><em class="red">*</em> 名称：</label>
+                    <div>
+                        <input class="form-control" type="text" ng-focus="clearErr()" required ng-model="admin.name" name="username"/>
+                        <div class="help-block" ng-show="validError.nameErr">{{validError.nameErr}}</div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error':validError.pwErr}">
+                    <label class="control-label"><em class="red">*</em> 密码：</label>
+                    <div>
+                        <input class="form-control" type="password" ng-model="admin.password" ng-focus="clearErr()" required name="password"/>
+                        <div class="help-block" ng-show="validError.pwErr">{{validError.pwErr}}</div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error':validError.permissionErr}">
+                    <label class="control-label"><em class="red">*</em> 权限：</label>
+                    <div>
+                        <label class="radio-inline"><input ng-click="clearErr()" type="radio" name="permission" ng-model="admin.permission" value="1"/> 1</label>
+                        <label class="radio-inline"><input ng-click="clearErr()" type="radio" name="permission" ng-model="admin.permission" value="2"/> 2</label>
+                        <label class="radio-inline"><input ng-click="clearErr()" type="radio" name="permission" ng-model="admin.permission" value="3"/> 3</label>
+                        <div class="help-block" ng-show="validError.permissionErr">{{validError.permissionErr}}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-warning" type="button" ng-click="addAdmin()">添 加</button>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" ng-class="{active:tab_index==2}">
+            <form name="editAdmin" class="col-lg-6" novalidate>
+                <div class="form-group">
+                    <label class="control-label">名称：</label>
+                    <div>
+                        <input class="form-control" type="text" disabled ng-model="admin.name" name="username"/>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error':validError.pwErr}">
+                    <label class="control-label">密码：</label>
+                    <div>
+                        <input class="form-control" type="password" ng-model="admin.password"  ng-focus="clearErr()" name="password"/>
+                        <div class="help-block" ng-show="validError.pwErr">{{validError.pwErr}}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">权限：</label>
+                    <div>
+                        <label class="radio-inline"><input type="radio" name="permission" ng-model="admin.permission" value="1"/> 1</label>
+                        <label class="radio-inline"><input type="radio" name="permission" ng-model="admin.permission" value="2"/> 2</label>
+                        <label class="radio-inline"><input type="radio" name="permission" ng-model="admin.permission" value="3"/> 3</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" type="button" ng-click="updateAdmin()">保 存</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-default" type="button" ng-click="cancelUpdate()">取 消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
