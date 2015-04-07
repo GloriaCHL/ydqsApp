@@ -19,6 +19,7 @@ define(['app'],function(app){
         $scope.initTabs();
 
         $scope.tab_index = 0;
+        $scope.tab_target = 0;
 
         $scope.getEssays = function(){
             $scope.essays = Essay.query();

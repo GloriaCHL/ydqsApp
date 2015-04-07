@@ -2,7 +2,7 @@
     <cont-tabs tabs-list="tabsList" tab-index="tab_index"></cont-tabs>
     <br/>
     <div class="tab-content">
-        <div ng-class="{active:tab_index==0}" class="tab-pane" id="essayList">
+        <div ng-class="{active:tab_target==0}" class="tab-pane" id="essayList">
             <div class="row">
                 <div class="col-lg-4"><input type="text" ng-model-options="{updateOn:'default',debounce:{'default':200}}" placeholder="搜索关键词..." ng-model="essaySearch" class="form-control"/></div>
             </div>
@@ -14,7 +14,7 @@
                 </li>
             </ul>
         </div>
-        <div ng-class="{active:tab_index==1}" class="tab-pane" id="essayAdd">
+        <div ng-class="{active:tab_target==1}" class="tab-pane" id="essayAdd">
             <form novalidate name="appEssay" class="col-lg-6">
                 <div class="form-group" ng-class="{'has-error':submitErr.titleErr}">
                     <label class="control-label">标题：</label>
@@ -35,7 +35,7 @@
                 </div>
             </form>
         </div>
-        <div ng-class="{active:tab_index==2}" class="tab-pane" id="essayEdit">
+        <div ng-class="{active:tab_target==2}" class="tab-pane" id="essayEdit">
             <form novalidate name="appEssay" class="col-lg-6">
                 <div class="form-group" ng-class="{'has-error':submitErr.titleErr}">
                     <label class="control-label">标题：</label>
@@ -56,7 +56,7 @@
                 </div>
             </form>
         </div>
-        <div ng-class="{active:tab_index==3}" class="tab-pane" id="essayView">
+        <div ng-class="{active:tab_target==3}" class="tab-pane" id="essayView">
             <div class="col-lg-6">
                 <h2>{{essay.title}}</h2>
                 <p class="lightgray">分类：{{essay.category}} | 作者：{{essay.author}} | 发表时间：{{essay.time.day}}</p>
