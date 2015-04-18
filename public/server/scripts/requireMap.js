@@ -22,10 +22,7 @@ require.config({
         'ngAnimate':{'deps':['angular'],'export':'ngAnimate'},
         'ngSanitize':{'deps':['angular'],'export':'ngSanitize'}
     },
-    priority: [
-        "angular"
-    ],
-    deps:['angular'],
+    /*deps:['Boot'],*/
     urlArgs: "bust=" + (new Date()).getTime()  //防止读取缓存，调试用
 });
 

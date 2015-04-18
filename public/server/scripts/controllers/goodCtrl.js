@@ -32,6 +32,7 @@ define(['app'],function(app){
         $scope.selectAll = false;
 
         $scope.tab_index = 0;
+        $scope.tab_target = 0;
 
         $scope.initTabs();
         $scope.initGood();
@@ -347,7 +348,7 @@ define(['app'],function(app){
         $scope.updateGood = function(id){
             $scope.tabsList.push({'text':'修改商品数据','original':false,'target':4});
             $scope.createStep = 0;
-            $scope.tabChange(4);
+            $scope.tabChange(4,4);
             GOOD.get({'id':id},function(data){
                 $scope.updateMode = true;
                 $scope.good = data;
@@ -427,9 +428,10 @@ define(['app'],function(app){
         };
 
 
-        $scope.tabChange = function(index){
+        $scope.tabChange = function(index,target){
             if(index != $scope.tab_index){
                 $scope.tab_index = index;
+                $scope.tab_target = target;
                 $scope.initGood();
                 $scope.initgModel();
                 $scope.selectModel();
@@ -443,6 +445,7 @@ define(['app'],function(app){
                 }
                 if($scope.tabsList[index].original){
                     $scope.initTabs();
+                    $scope.updateMode = false;
                 }
             }
         };
